@@ -50,5 +50,33 @@ def place_order():
     orders.append(order)
     return jsonify(order), 201
 
+# 🔹 Initialisation des données (6 products, 2 carts, 3 orders)
+def init_data():
+    products.extend([
+        {"id": 1, "name": "Produit 1", "price": 100, "stock": 50},
+        {"id": 2, "name": "Produit 2", "price": 150, "stock": 30},
+        {"id": 3, "name": "Produit 3", "price": 200, "stock": 20},
+        {"id": 4, "name": "Produit 4", "price": 250, "stock": 10},
+        {"id": 5, "name": "Produit 5", "price": 300, "stock": 5},
+        {"id": 6, "name": "Produit 6", "price": 50, "stock": 100}
+    ])
+    
+    carts["user_1"] = [
+        {"product_id": 1, "quantity": 2},
+        {"product_id": 3, "quantity": 1}
+    ]
+    carts["user_2"] = [
+        {"product_id": 2, "quantity": 3},
+        {"product_id": 5, "quantity": 1}
+    ]
+    
+    orders.extend([
+        {"id": 1, "user_id": "user_1", "items": [{"product_id": 1, "quantity": 2}, {"product_id": 3, "quantity": 1}], "total_price": 350},
+        {"id": 2, "user_id": "user_2", "items": [{"product_id": 2, "quantity": 3}, {"product_id": 5, "quantity": 1}], "total_price": 850},
+        {"id": 3, "user_id": "user_1", "items": [{"product_id": 4, "quantity": 1}], "total_price": 250}
+    ])
+
+init_data()
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=3001)
