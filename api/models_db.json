@@ -1,0 +1,10 @@
+{
+    "random_forest": {
+        "weight": 1.0,
+        "balance": 1000
+    },
+    "NB": {
+        "weight": 1.0,
+        "balance": 1000
+    }
+}
