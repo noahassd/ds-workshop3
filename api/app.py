@@ -4,7 +4,7 @@ import numpy as np
 
 app = Flask(__name__)
 
-model = joblib.load("iris_model.pkl")
+model = joblib.load("models/iris_modelNB.pkl")
 
 @app.route("/")
 def home():
