@@ -38,9 +38,16 @@ def predict_all():
         predictions = {}
         weighted_predictions = []
 
-        total_weight = sum(db[model]["weight"] for model in models)
+        # 🔥 Vérifier que des modèles sont inscrits (staked=True)
+        active_models = [m for m in db if db[m]["staked"]]
+        if not active_models:
+            return jsonify({"error": "Aucun modèle actif, tous ont été exclus."}), 400
 
-        for model_name, model in models.items():
+        total_weight = sum(db[model]["weight"] for model in active_models)
+
+        for model_name in active_models:
+            model = models[model_name]
+
             if hasattr(model, "predict_proba"):
                 proba = model.predict_proba(np.array([[f1, f2, f3, f4]]))[0]
                 prediction = int(np.argmax(proba))
@@ -56,11 +63,12 @@ def predict_all():
         return jsonify({
             "predictions": predictions,
             "consensus_prediction": int(consensus_prediction),
-            "weights": {model: db[model]["weight"] for model in models}
+            "weights": {model: db[model]["weight"] for model in active_models}
         })
 
     except Exception as e:
         return jsonify({"error": str(e)})
+
 
 @app.route("/update_scores", methods=["POST"])
 def update_scores():
