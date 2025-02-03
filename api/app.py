@@ -62,5 +62,37 @@ def predict_all():
     except Exception as e:
         return jsonify({"error": str(e)})
 
+@app.route("/update_scores", methods=["POST"])
+def update_scores():
+    try:
+        data = request.get_json()
+        correct_prediction = int(data["correct_prediction"])  # La vraie valeur à prédire
+        db = load_db()
+
+        for model_name, prediction in data["predictions"].items():
+            if model_name not in db:
+                continue  # Si un modèle a déjà été supprimé, on l'ignore
+
+            if prediction == correct_prediction:
+                # ✅ Récompense : Augmente la balance et le poids du modèle
+                db[model_name]["balance"] += 10
+                db[model_name]["weight"] = min(db[model_name]["weight"] + 0.1, 2.0)
+            else:
+                # ❌ Pénalité (Slashing) : Diminue la balance et le poids du modèle
+                db[model_name]["balance"] -= 50
+                db[model_name]["weight"] = max(db[model_name]["weight"] - 0.2, 0.1)
+
+            # 🚨 Suppression d'un modèle si son balance atteint 0
+            if db[model_name]["balance"] <= 0:
+                del db[model_name]
+
+        save_db(db)
+
+        return jsonify({"message": "Scores mis à jour", "database": db})
+
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
