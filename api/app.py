@@ -69,6 +69,33 @@ def predict_all():
 
     except Exception as e:
         return jsonify({"error": str(e)})
+@app.route("/stake", methods=["POST"])
+def stake():
+    try:
+        data = request.get_json()
+        model_name = data["model"]
+
+        db = load_db()
+
+        if model_name not in models:
+            return jsonify({"error": "Modèle inconnu"}), 400
+
+        # 📌 Vérifier si le modèle est déjà inscrit
+        if db.get(model_name, {}).get("staked", False):
+            return jsonify({"message": f"{model_name} est déjà inscrit."})
+
+        # 🚀 Ajouter le modèle avec un dépôt initial
+        db[model_name] = {
+            "weight": 1.0,
+            "balance": 1000,
+            "staked": True
+        }
+
+        save_db(db)
+        return jsonify({"message": f"{model_name} a rejoint le système avec 1000€ de dépôt.", "database": db})
+
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 
 @app.route("/update_scores", methods=["POST"])
