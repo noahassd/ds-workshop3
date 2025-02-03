@@ -1,10 +1,12 @@
 {
     "random_forest": {
         "weight": 1.0,
-        "balance": 1000
+        "balance": 1000,
+        "staked": true
     },
     "NB": {
         "weight": 1.0,
-        "balance": 1000
+        "balance": 1000,
+        "staked": true
     }
 }
