@@ -13,6 +13,29 @@ orders = []
 # 🔥 Liste des serveurs de backup
 BACKUP_SERVERS = ["http://localhost:3003"]
 
+def replicate_data_sync(route, data, method="POST"):
+    """Réplication synchrone : les données sont envoyées aux serveurs de backup en temps réel."""
+    success = True
+    for server in BACKUP_SERVERS:
+        try:
+            url = f"{server}{route}"
+            if method == "POST":
+                response = requests.post(url, json=data)
+            elif method == "PUT":
+                response = requests.put(url, json=data)
+            elif method == "DELETE":
+                response = requests.delete(url)
+
+            if response.status_code >= 400:
+                print(f"⚠️ Échec de la réplication sur {server}")
+                success = False
+        except requests.exceptions.RequestException:
+            print(f"⚠️ Impossible de contacter {server}")
+            success = False
+    
+    return success
+
+
 # Fonction pour synchroniser les données avec les autres serveurs
 def replicate_data(route, data):
     for server in BACKUP_SERVERS:
@@ -176,4 +199,4 @@ def init_data():
 init_data()
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3003)
+    app.run(host="0.0.0.0", port=3002)
