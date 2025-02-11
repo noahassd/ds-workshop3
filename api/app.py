@@ -9,7 +9,8 @@ app = Flask(__name__)
 models = {
     "random_forest": joblib.load("models/iris_model.pkl"),
     "NB": joblib.load("models/iris_modelNB.pkl"),
-    "DT": joblib.load("models/iris_modelDT.pkl")
+    "DT": joblib.load("models/iris_modelDT.pkl"),
+    "SVM": joblib.load("models/iris_modelSVM.pkl")
 }
 
 # 📌 Charger la base de données JSON pour stocker les poids et balances

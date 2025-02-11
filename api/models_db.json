@@ -13,5 +13,10 @@
         "weight": 1.0,
         "balance": 1000,
         "staked": true
+    },
+    "SVM": {
+        "weight": 1.0,
+        "balance": 1000,
+        "staked": true
     }
 }

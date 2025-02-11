@@ -1,5 +1,3 @@
-import pandas as pd
-import numpy as np
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -20,5 +18,5 @@ model = DecisionTreeClassifier(random_state=42)
 model.fit(X_train, y_train)
 
 joblib.dump(model, "models/iris_modelDT.pkl")
-
 print("Modèle entraîné et sauvegardé sous 'iris_modelDT.pkl'")
+
