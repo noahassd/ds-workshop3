@@ -1,7 +1,9 @@
 import requests
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Active CORS pour toutes les routes
 
 # 📦 Base de données en mémoire
 products = []
@@ -130,6 +132,8 @@ def get_cart(user_id):
             })
 
     return jsonify({"user_id": user_id, "cart": cart_details, "total_price": total_price})
+
+
 
 @app.route("/cart/<user_id>/item/<int:product_id>", methods=["DELETE"])
 def delete_item_from_cart(user_id, product_id):

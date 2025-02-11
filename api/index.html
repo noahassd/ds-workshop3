@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce API Interface</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-4">
+
+    <h1 class="text-center">E-Commerce API</h1>
+
+    <!-- Section Produits -->
+    <h2>Produits</h2>
+    <button class="btn btn-primary mb-2" onclick="getProducts()">Afficher les Produits</button>
+    <ul id="product-list" class="list-group"></ul>
+
+    <!-- Section Ajouter un Produit -->
+    <h2>Ajouter un Produit</h2>
+    <form id="add-product-form">
+        <input type="text" id="product-name" class="form-control mb-2" placeholder="Nom du produit" required>
+        <input type="number" id="product-price" class="form-control mb-2" placeholder="Prix" required>
+        <input type="number" id="product-stock" class="form-control mb-2" placeholder="Stock" required>
+        <button type="submit" class="btn btn-success">Ajouter</button>
+    </form>
+
+    <!-- Section Commandes -->
+    <h2>Commandes</h2>
+    <input type="text" id="user-id" class="form-control mb-2" placeholder="ID Utilisateur">
+    <button class="btn btn-primary" onclick="getOrders()">Afficher les Commandes</button>
+    <ul id="order-list" class="list-group mt-2"></ul>
+
+    <!-- JavaScript -->
+    <script>
+        const API_URL = "http://localhost:3001";
+
+        // 📌 Afficher les produits
+        function getProducts() {
+            fetch(`${API_URL}/products`)
+                .then(response => response.json())
+                .then(products => {
+                    let productList = document.getElementById("product-list");
+                    productList.innerHTML = "";
+                    products.forEach(product => {
+                        let li = document.createElement("li");
+                        li.className = "list-group-item";
+                        li.innerHTML = `${product.name} - ${product.price}€ (Stock: ${product.stock})`;
+                        productList.appendChild(li);
+                    });
+                })
+                .catch(error => console.error("Erreur:", error));
+        }
+
+        // 📌 Ajouter un produit
+        document.getElementById("add-product-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let name = document.getElementById("product-name").value;
+            let price = document.getElementById("product-price").value;
+            let stock = document.getElementById("product-stock").value;
+
+            fetch(`${API_URL}/products`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, price: Number(price), stock: Number(stock) })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Produit ajouté !");
+                getProducts();
+            })
+            .catch(error => console.error("Erreur:", error));
+        });
+
+        // 📌 Afficher les commandes d'un utilisateur
+        function getOrders() {
+            let userId = document.getElementById("user-id").value;
+            if (!userId) return alert("Veuillez entrer un ID utilisateur.");
+
+            fetch(`${API_URL}/orders/${userId}`)
+                .then(response => response.json())
+                .then(orders => {
+                    let orderList = document.getElementById("order-list");
+                    orderList.innerHTML = "";
+                    orders.forEach(order => {
+                        let li = document.createElement("li");
+                        li.className = "list-group-item";
+                        li.innerHTML = `Commande #${order.id} - Total: ${order.total_price}€`;
+                        orderList.appendChild(li);
+                    });
+                })
+                .catch(error => console.error("Erreur:", error));
+        }
+    </script>
+
+</body>
+</html>
