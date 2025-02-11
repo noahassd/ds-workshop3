@@ -32,24 +32,36 @@
 
     <!-- JavaScript -->
     <script>
-        const API_URL = "http://localhost:3001";
+        const API_SERVERS = ["http://localhost:3001", "http://localhost:3002","http://localhost:3003"]; // Ajout d'un serveur de secours
 
-        // 📌 Afficher les produits
-        function getProducts() {
-            fetch(`${API_URL}/products`)
-                .then(response => response.json())
-                .then(products => {
-                    let productList = document.getElementById("product-list");
-                    productList.innerHTML = "";
-                    products.forEach(product => {
-                        let li = document.createElement("li");
-                        li.className = "list-group-item";
-                        li.innerHTML = `${product.name} - ${product.price}€ (Stock: ${product.stock})`;
-                        productList.appendChild(li);
-                    });
-                })
-                .catch(error => console.error("Erreur:", error));
+async function fetchWithFailover(endpoint) {
+    for (let server of API_SERVERS) {
+        try {
+            let response = await fetch(`${server}${endpoint}`);
+            if (response.ok) return await response.json();
+        } catch (error) {
+            console.warn(`⚠️ Erreur avec ${server}, tentative sur le suivant...`);
         }
+    }
+    throw new Error("❌ Aucun serveur disponible");
+}
+
+async function getProducts() {
+    try {
+        let products = await fetchWithFailover("/products");
+        let productList = document.getElementById("product-list");
+        productList.innerHTML = "";
+        products.forEach(product => {
+            let li = document.createElement("li");
+            li.className = "list-group-item";
+            li.innerHTML = `${product.name} - ${product.price}€ (Stock: ${product.stock})`;
+            productList.appendChild(li);
+        });
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
 
         // 📌 Ajouter un produit
         document.getElementById("add-product-form").addEventListener("submit", function(event) {
