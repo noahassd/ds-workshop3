@@ -18,5 +18,5 @@ model = DecisionTreeClassifier(random_state=42)
 model.fit(X_train, y_train)
 
 joblib.dump(model, "models/iris_modelDT.pkl")
-
 print("Modèle entraîné et sauvegardé sous 'iris_modelDT.pkl'")
+
