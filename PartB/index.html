@@ -40,10 +40,10 @@ async function fetchWithFailover(endpoint) {
             let response = await fetch(`${server}${endpoint}`);
             if (response.ok) return await response.json();
         } catch (error) {
-            console.warn(`⚠️ Erreur avec ${server}, tentative sur le suivant...`);
+            console.warn(`Erreur avec ${server}, tentative sur le suivant...`);
         }
     }
-    throw new Error("❌ Aucun serveur disponible");
+    throw new Error("Aucun serveur disponible");
 }
 
 async function getProducts() {
@@ -63,7 +63,7 @@ async function getProducts() {
 }
 
 
-        // 📌 Ajouter un produit
+        // Ajouter un produit
         document.getElementById("add-product-form").addEventListener("submit", function(event) {
             event.preventDefault();
             let name = document.getElementById("product-name").value;
@@ -83,7 +83,7 @@ async function getProducts() {
             .catch(error => console.error("Erreur:", error));
         });
 
-        // 📌 Afficher les commandes d'un utilisateur
+        // Afficher les commandes d'un utilisateur
         function getOrders() {
             let userId = document.getElementById("user-id").value;
             if (!userId) return alert("Veuillez entrer un ID utilisateur.");
