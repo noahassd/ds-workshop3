@@ -5,7 +5,7 @@ import numpy as np
 
 app = Flask(__name__)
 
-# 📌 Charger les modèles
+# Charger les modèles
 models = {
     "random_forest": joblib.load("models/iris_model.pkl"),
     "NB": joblib.load("models/iris_modelNB.pkl"),
@@ -13,7 +13,7 @@ models = {
     "SVM": joblib.load("models/iris_modelSVM.pkl")
 }
 
-# 📌 Charger la base de données JSON pour stocker les poids et balances
+# Charger la base de données JSON pour stocker les poids et balances
 DB_FILE = "api/models_db.json"
 
 def load_db():
@@ -40,7 +40,7 @@ def predict_all():
         predictions = {}
         weighted_predictions = []
 
-        # 🔥 Vérifier que des modèles sont inscrits (staked=True)
+        # Vérifier que des modèles sont inscrits (staked=True)
         active_models = [m for m in db if db[m]["staked"]]
         if not active_models:
             return jsonify({"error": "Aucun modèle actif, tous ont été exclus."}), 400
@@ -81,11 +81,11 @@ def stake():
         if model_name not in models:
             return jsonify({"error": "Modèle inconnu"}), 400
 
-        # 📌 Vérifier si le modèle est déjà inscrit
+        # Vérifier si le modèle est déjà inscrit
         if db.get(model_name, {}).get("staked", False):
             return jsonify({"message": f"{model_name} est déjà inscrit."})
 
-        # 🚀 Ajouter le modèle avec un dépôt initial
+        # Ajouter le modèle avec un dépôt initial
         db[model_name] = {
             "weight": 1.0,
             "balance": 1000,
@@ -111,15 +111,15 @@ def update_scores():
                 continue  # Si un modèle a déjà été supprimé, on l'ignore
 
             if prediction == correct_prediction:
-                # ✅ Récompense : Augmente la balance et le poids du modèle
+                # Récompense : Augmente la balance et le poids du modèle
                 db[model_name]["balance"] += 10
                 db[model_name]["weight"] = min(db[model_name]["weight"] + 0.1, 2.0)
             else:
-                # ❌ Pénalité (Slashing) : Diminue la balance et le poids du modèle
+                # Pénalité (Slashing) : Diminue la balance et le poids du modèle
                 db[model_name]["balance"] -= 50
                 db[model_name]["weight"] = max(db[model_name]["weight"] - 0.2, 0.1)
 
-            # 🚨 Suppression d'un modèle si son balance atteint 0
+            # Suppression d'un modèle si son balance atteint 0
             if db[model_name]["balance"] <= 0:
                 del db[model_name]
 
