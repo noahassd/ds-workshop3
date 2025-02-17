@@ -5,12 +5,12 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)  # Active CORS pour toutes les routes
 
-# 📦 Base de données en mémoire
+# Base de données en mémoire
 products = []
 carts = {}
 orders = []
 
-# 🔥 Liste des serveurs de backup
+# Liste des serveurs de backup
 BACKUP_SERVERS = ["http://localhost:3003"]
 
 def replicate_data_sync(route, data, method="POST"):
@@ -27,10 +27,10 @@ def replicate_data_sync(route, data, method="POST"):
                 response = requests.delete(url)
 
             if response.status_code >= 400:
-                print(f"⚠️ Échec de la réplication sur {server}")
+                print(f"Échec de la réplication sur {server}")
                 success = False
         except requests.exceptions.RequestException:
-            print(f"⚠️ Impossible de contacter {server}")
+            print(f"Impossible de contacter {server}")
             success = False
     
     return success
@@ -42,7 +42,7 @@ def replicate_data(route, data):
         try:
             requests.post(f"{server}{route}", json=data)
         except requests.exceptions.RequestException:
-            print(f"⚠️ Erreur de synchronisation avec {server}")
+            print(f"Erreur de synchronisation avec {server}")
 
 # 🔹 ROUTES PRODUITS
 @app.route("/products", methods=["GET"])
@@ -72,7 +72,7 @@ def add_product():
     }
     products.append(product)
 
-    # 🔄 Réplication vers le serveur secondaire
+    # Réplication vers le serveur secondaire
     replicate_data("/products", product)
 
     return jsonify(product), 201
@@ -106,7 +106,7 @@ def delete_product(id):
     return jsonify({"message": f"Product with ID {id} has been deleted successfully."}), 200
 
 
-# 🔹 ROUTES PANIER
+# ROUTES PANIER
 @app.route("/cart/<user_id>", methods=["POST"])
 def add_to_cart(user_id):
     data = request.get_json()
@@ -114,12 +114,12 @@ def add_to_cart(user_id):
         carts[user_id] = []
     carts[user_id].append({"product_id": data["product_id"], "quantity": data["quantity"]})
 
-    # 🔄 Réplication du panier
+    # Réplication du panier
     replicate_data(f"/cart/{user_id}", carts[user_id])
 
     return jsonify({"message": "Produit ajouté au panier", "cart": carts[user_id]})
 
-# 🔹 ROUTES COMMANDES
+# ROUTES COMMANDES
 @app.route("/orders", methods=["POST"])
 def place_order():
     data = request.get_json()
@@ -131,7 +131,7 @@ def place_order():
     }
     orders.append(order)
 
-    # 🔄 Réplication des commandes
+    # Réplication des commandes
     replicate_data("/orders", order)
 
     return jsonify(order), 201
@@ -170,7 +170,7 @@ def delete_item_from_cart(user_id, product_id):
 
     return jsonify({"error": "Product not found in cart"}), 404
 
-# 🔹 Initialisation des données (6 products, 2 carts, 3 orders)
+# Initialisation des données (6 products, 2 carts, 3 orders)
 def init_data():
     products.extend([
         {"id": 1, "name": "Produit 1", "price": 100, "stock": 50},
